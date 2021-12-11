@@ -26,6 +26,10 @@ app.get('/post',(req,res)=>{
 app.get('/posts/new',(req,res)=>{
     res.render('create')
     })
+app.post('/posts/store',(req,res)=>{
+        console.log(req.body)
+        res.redirect('/')
+})
 app.listen(4000, ()=>{
 
     console.log('App listening on port 4000')
