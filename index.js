@@ -14,8 +14,10 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:true}))
 
 app.set('view engine','ejs')
-app.get('/',(req,res)=>{
-    res.render('index');
+app.get('/', async (req,res)=>{
+    const blogposts = await BlogPost.find({})
+    console.log(blogposts)
+    res.render('index',{blogposts});
 })
 app.get('/about',(req,res)=>{
     //res.sendFile(path.resolve(__dirname,'pages/about.html'))
