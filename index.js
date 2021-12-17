@@ -5,14 +5,14 @@ const ejs = require('ejs')
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser')
 const BlogPost = require('./models/BlogPost.js')
-
+const fileUpload = require('express-fileupload')
 
 mongoose.connect('mongodb://localhost/my_database', {useNewUrlParser: true})
 
 app.use(express.static('public'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:true}))
-
+app.use(fileUpload())
 app.set('view engine','ejs')
 app.get('/', async (req,res)=>{
     const blogposts = await BlogPost.find({})
@@ -41,11 +41,15 @@ app.get('/post/:id',async (req,res)=>{
         })
 })
 
-app.post('/posts/store', async (req,res)=>{
-        await BlogPost.create(req.body)
-        console.log(req.body)
-        res.redirect('/')
+
+app.post('/posts/store', (req,res)=>{
+    let image = req.files.image;
+    image.mv(path.resolve(__dirname,'public/img',image.name),async (error)=>{
+    await BlogPost.create({ ...req.body, image: '/assets/img/' + image.name})
+    res.redirect('/')
+    })
 })
+    
         
 app.listen(4000, ()=>{
 
