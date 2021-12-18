@@ -8,11 +8,18 @@ const BlogPost = require('./models/BlogPost.js')
 const fileUpload = require('express-fileupload')
 
 mongoose.connect('mongodb://localhost/my_database', {useNewUrlParser: true})
-
+const validateMiddleWare = (req,res,next)=>{
+    if(req.files == null || req.body.title == null || req.body.title == null){
+    return res.redirect('/posts/new')
+    }
+    next()
+}
+    
 app.use(express.static('public'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(fileUpload())
+app.use('/posts/store',validateMiddleWare)
 app.set('view engine','ejs')
 app.get('/', async (req,res)=>{
     const blogposts = await BlogPost.find({})
@@ -45,7 +52,7 @@ app.get('/post/:id',async (req,res)=>{
 app.post('/posts/store', (req,res)=>{
     let image = req.files.image;
     image.mv(path.resolve(__dirname,'public/img',image.name),async (error)=>{
-    await BlogPost.create({ ...req.body, image: '/assets/img/' + image.name})
+    await BlogPost.create({ ...req.body, image: '/img/' + image.name})
     res.redirect('/')
     })
 })
